@@ -1,0 +1,41 @@
+/************************/
+/* Better-Multiselect styles     */
+/************************/
+div.bmultiselect {
+    font-size:12px;
+    font-family: Arial, Helvetica, sans-serif;
+    white-space: nowrap;
+}
+div.bmultiselect .selection {
+    border : 1px solid #AAA;
+    overflow: auto;
+    text-align: left;
+}
+div.bmultiselect .selection label{
+    text-align: left;
+    display: block;
+    border-top: 1px solid #eee;
+    background-color: #ffffff;
+}
+div.bmultiselect .selection label.hover{
+    background-color: #E3E8F3;
+}
+div.bmultiselect .selection label.selected{
+    background-color: #D3D8F3;
+}
+div.bmultiselect .toolbar {
+    text-align : center;
+    vertical-align : middle;
+    height : 16px;
+    padding-top : 2px;
+    padding-left : 3px;
+    border-left : 1px solid #AAA;
+    border-right : 1px solid #AAA;
+    border-bottom : 1px solid #AAA;
+    background-color: #ffffff;
+}
+div.bmultiselect .toolbar span{
+    padding-right : 3px;
+    padding-left : 5px;
+}
+
