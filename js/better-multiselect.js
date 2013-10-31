@@ -1,3 +1,60 @@
+/*    EventCache Version 1.0
+    Copyright 2005 Mark Wubben
+
+    Provides a way for automagically removing events from nodes and thus preventing memory leakage.
+    See </web/20060501083526/http://novemberborn.net/javascript/event-cache> for more information.
+    
+    This software is licensed under the CC-GNU LGPL </web/20060501083526/http://creativecommons.org/licenses/LGPL/2.1/>
+*/
+
+/*    Implement array.push for browsers which don't support it natively.
+    Please remove this if it's already in other code */
+if(Array.prototype.push == null){
+    Array.prototype.push = function(){
+        for(var i = 0; i < arguments.length; i++){
+            this[this.length] = arguments[i];
+        };
+        return this.length;
+    };
+};
+
+/*    Event Cache uses an anonymous function to create a hidden scope chain.
+    This is to prevent scoping issues. */
+var EventCache = function(){
+    var listEvents = [];
+    
+    return {
+        listEvents : listEvents,
+    
+        add : function(node, sEventName, fHandler, bCapture){
+            listEvents.push(arguments);
+        },
+    
+        flush : function(){
+            var i, item;
+            for(i = listEvents.length - 1; i >= 0; i = i - 1){
+                item = listEvents[i];
+                
+                if(item[0].removeEventListener){
+                    item[0].removeEventListener(item[1], item[2], item[3]);
+                };
+                
+                /* From this point on we need the event names to be prefixed with 'on" */
+                if(item[1].substring(0, 2) != "on"){
+                    item[1] = "on" + item[1];
+                };
+                
+                if(item[0].detachEvent){
+                    item[0].detachEvent(item[1], item[2]);
+                };
+                
+                item[0][item[1]] = null;
+            };
+        }
+    };
+}();
+
+
 /*
   Better-Multiselect Javascript Library
   Converts all standard multiselects on the HTML page to DHTML versions that do not require control-clicks for
@@ -7,14 +64,11 @@
 */
 var bmFormsConverted = false;
 var betterMultiselect = {
-	// BEGIN configuration options
+    // BEGIN configuration options
     showMultiselectToolbar : true, // set to false to disable multiselect toolbar
     toolbarMinOptions : 5, // number of options required to enable toolbar
-	// END configuration options
-	
-    isIE : window.attachEvent ? true : false,
-    isIE6 : (window.attachEvent && (parseInt(navigator.appVersion) == 4) && (navigator.userAgent.toLowerCase().indexOf("msie 6.")!= -1) ),	
-	
+    // END configuration options
+    
     newLink: function(href,text){
         var e = document.createElement('a');e.href=href;e.appendChild(betterMultiselect.newText(text));return e;
     },
@@ -66,64 +120,33 @@ var betterMultiselect = {
         var optionCount = elem.options.length;
         var styleMaxWidth = (elem.style.maxWidth != null && elem.style.maxWidth.length > 0) ? elem.style.maxWidth : "0";
         var styleMaxHeight = (elem.style.maxHeight != null && elem.style.maxHeight.length > 0) ? elem.style.maxHeight : "0";
+        alert(elem.offsetWidth)
         var msw=Math.max("0",Math.max(styleMaxWidth.replace("px",""), elem.offsetWidth));
         var msh=Math.max("0",styleMaxHeight.replace("px",""));
         if (msw<200) msw=200;
-        if (msh<100) {
-            // another IE6 hack, sigh
-            if (origClassName.indexOf("dropdown") >= 0 && betterMultiselect.isIE6 && optionCount > 4) {
-                if (22 * optionCount < 301) {
-                    msh= 22 * optionCount;
-                } else {
-                    msh = 300;
-                }
-            } else {
-                msh=100;
-            }
-        }
+        if (msh<180) msh=180;
 
         var numSelected = 0;
         var outerDiv = document.createElement('div');
         var div = document.createElement('div');
 
-        outerDiv.style.maxWidth      = msw+'px';
+        outerDiv.style.maxWidth      = (msw + 20)+'px';
         outerDiv.className      = 'bmultiselect';
         div.className     = 'selection';
-        div.style.maxWidth      = msw +'px';
+        div.style.minWidth      = msw +'px';
+        div.style.maxWidth      = (msw + 16) +'px';
         div.style.maxHeight     = msh +'px';
-        if (betterMultiselect.isIE6) {  // hack for IE 6 not respecting maxheight
-            div.style.height = msh +'px';;
-        }
 
         for (j=0; j < elem.options.length; j++){
             var id = elem.name.replace('/\\[\]$/','') + j;
             var label = document.createElement('label');
-            label.style.maxWidth = msw +'px';
+            //label.style.maxWidth = msw +'px';
             label.onmouseover = function() { this.className = this.getElementsByTagName('input')[0].checked ? "selected" : "hover"; };
             label.onmouseout = function() { this.className = this.getElementsByTagName('input')[0].checked ? "selected" : ""; };
             label.onselectstart = function () { return false; } // ie prevent text selection
             label.onmousedown = function () { return false; } // mozilla prevent text selection
             var checkbox = document.createElement('input');
             checkbox.type  = 'checkbox';
-            if (! betterMultiselect.isIE) {
-                checkbox.style.margin  = '2px 2px 2px 2px';
-            }
-            // need these functions since IE 6 deosn't auto-click child check boxes
-            if (betterMultiselect.isIE6) {
-                label.onclick = function() {
-                    var thisCheck = this.getElementsByTagName('input')[0];
-                    if (! thisCheck.overme) {
-                        thisCheck.checked = thisCheck.checked ? false : true;
-                        thisCheck.onclick();
-                    }
-                };
-                checkbox.onmouseover = function() {
-                    this.overme = true;
-                };
-                checkbox.onmouseout = function() {
-                    this.overme = false;
-                };
-            }
             checkbox.name  = elem.name;
             checkbox.value = elem.options[j].value;
             checkbox.id    = id+"_"+onchangeCount;
@@ -158,7 +181,6 @@ var betterMultiselect = {
 
             var statusDiv = document.createElement('div');
             statusDiv.className = 'toolbar';
-            statusDiv.style.maxWidth = msw +'px';
             statusDiv.appendChild(betterMultiselect.newText(' ['));
             var allLink = betterMultiselect.newLink('#','all');
             allLink.onclick = function(){
@@ -211,21 +233,21 @@ var betterMultiselect = {
         elem.parentNode.replaceChild(outerDiv, elem);
         return true;
     },
-	addEvent: function( obj, type, fn ) {
-	  if (obj.addEventListener) {
-		obj.addEventListener( type, fn, false );
-		EventCache.add(obj, type, fn);
-	  }
-	  else if (obj.attachEvent) {
-		obj["e"+type+fn] = fn;
-		obj[type+fn] = function() { obj["e"+type+fn]( window.event ); }
-		obj.attachEvent( "on"+type, obj[type+fn] );
-		EventCache.add(obj, type, fn);
-	  }
-	  else {
-		obj["on"+type] = obj["e"+type+fn];
-	  }
-	}	
+    addEvent: function( obj, type, fn ) {
+      if (obj.addEventListener) {
+        obj.addEventListener( type, fn, false );
+        EventCache.add(obj, type, fn);
+      }
+      else if (obj.attachEvent) {
+        obj["e"+type+fn] = fn;
+        obj[type+fn] = function() { obj["e"+type+fn]( window.event ); }
+        obj.attachEvent( "on"+type, obj[type+fn] );
+        EventCache.add(obj, type, fn);
+      }
+      else {
+        obj["on"+type] = obj["e"+type+fn];
+      }
+    }    
 };
 
 betterMultiselect.addEvent(window,'load', betterMultiselect.convertFormElements);

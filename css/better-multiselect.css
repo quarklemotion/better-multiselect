@@ -1,40 +1,63 @@
-/************************/
-/* Better-Multiselect styles     */
-/************************/
-div.bmultiselect {
-    font-size:12px;
-    font-family: Arial, Helvetica, sans-serif;
-    white-space: nowrap;
+/*********************************/
+/*   Better-Multiselect styles   */
+/*********************************/
+
+/**
+ * over-size the font on pre-converted multi-selects to make sure
+ * the generated multi-selects are wide enough (javascript '.offsetWidth')
+ */
+select[multiple] {
+    font-size: 22px;    
 }
-div.bmultiselect .selection {
+
+.bmultiselect {
+    white-space: nowrap;
+    float: left;
+    margin: 6px;
+}
+.bmultiselect .selection {
     border : 1px solid #AAA;
     overflow: auto;
-    text-align: left;
+    vertical-align : middle;
 }
-div.bmultiselect .selection label{
+.bmultiselect .selection {
+    vertical-align: middle;
+}
+.bmultiselect .selection label{
     text-align: left;
+    vertical-align: middle;
     display: block;
     border-top: 1px solid #eee;
     background-color: #ffffff;
+    cursor: pointer;
 }
-div.bmultiselect .selection label.hover{
+.bmultiselect .selection label input[type=checkbox] {
+    vertical-align: middle;
+    text-align: center;
+    margin: 5px 5px 6px 5px;
+    position: relative;
+    bottom: 1px;
+}
+.bmultiselect .selection label.hover{
     background-color: #E3E8F3;
 }
-div.bmultiselect .selection label.selected{
+.bmultiselect .selection label.selected{
     background-color: #D3D8F3;
 }
-div.bmultiselect .toolbar {
+.bmultiselect .toolbar {
+    font-size: 16px;
     text-align : center;
     vertical-align : middle;
-    height : 16px;
+    height : 24px;
     padding-top : 2px;
     padding-left : 3px;
     border-left : 1px solid #AAA;
     border-right : 1px solid #AAA;
     border-bottom : 1px solid #AAA;
     background-color: #ffffff;
+    white-space: nowrap;
 }
-div.bmultiselect .toolbar span{
+.bmultiselect .toolbar span{
     padding-right : 3px;
     padding-left : 5px;
 }
