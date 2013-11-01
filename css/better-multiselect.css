@@ -20,9 +20,6 @@ select[multiple] {
     overflow: auto;
     vertical-align : middle;
 }
-.bmultiselect .selection {
-    vertical-align: middle;
-}
 .bmultiselect .selection label{
     text-align: left;
     vertical-align: middle;
@@ -31,25 +28,26 @@ select[multiple] {
     background-color: #ffffff;
     cursor: pointer;
 }
-.bmultiselect .selection label input[type=checkbox] {
-    vertical-align: middle;
-    text-align: center;
-    margin: 4px 4px 4px 4px;
-    position: relative;
-    bottom: 1px;
-}
 .bmultiselect .selection label.hover{
     background-color: #E3E8F3;
 }
 .bmultiselect .selection label.selected{
     background-color: #D3D8F3;
 }
+.bmultiselect .selection label input[type=checkbox] {
+    vertical-align: middle;
+    margin-left: 6px;
+    margin-right: 6px;
+}
+.bmultiselect .selection label span {
+    vertical-align: middle;
+}
 .bmultiselect .toolbar {
-    font-size: 16px;
+    font-size: 14px;
     text-align : center;
     vertical-align : middle;
-    height : 24px;
-    padding-top : 2px;
+    height : 20px;
+    padding-top : 4px;
     padding-left : 3px;
     border-left : 1px solid #AAA;
     border-right : 1px solid #AAA;

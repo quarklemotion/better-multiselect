@@ -7,17 +7,6 @@
     This software is licensed under the CC-GNU LGPL </web/20060501083526/http://creativecommons.org/licenses/LGPL/2.1/>
 */
 
-/*    Implement array.push for browsers which don't support it natively.
-    Please remove this if it's already in other code */
-if(Array.prototype.push == null){
-    Array.prototype.push = function(){
-        for(var i = 0; i < arguments.length; i++){
-            this[this.length] = arguments[i];
-        };
-        return this.length;
-    };
-};
-
 /*    Event Cache uses an anonymous function to create a hidden scope chain.
     This is to prevent scoping issues. */
 var EventCache = function(){
@@ -69,8 +58,12 @@ var betterMultiselect = {
     toolbarMinOptions : 5, // number of options required to enable toolbar
     // END configuration options
     
-    newLink: function(href,text){
-        var e = document.createElement('a');e.href=href;e.appendChild(betterMultiselect.newText(text));return e;
+    newLink: function(href, text, title){
+        var e = document.createElement('a');
+        e.href = href;
+        e.title = title;
+        e.appendChild(betterMultiselect.newText(text));
+        return e;
     },
     newText: function (t){
         return document.createTextNode(t);
@@ -79,10 +72,11 @@ var betterMultiselect = {
         var container = elem.parentNode.parentNode;
         var numSelected = 0;
         var checks = container.getElementsByTagName('input');
-        for (var i=0; i < checks.length; i++) {
+        for (var i = 0; i < checks.length; i++) {
             if (checks[i].disabled == false && checks[i].checked) {numSelected++;}
         }
-        container.parentNode.getElementsByTagName('span')[0].innerHTML = '(' + numSelected + ' selected)';
+        var spans = container.parentNode.getElementsByTagName('span');
+        spans[spans.length - 1].innerHTML = '(' + numSelected + ' selected)';
     },
     convertFormElements: function() {
         if (bmFormsConverted == false){
@@ -92,10 +86,8 @@ var betterMultiselect = {
     },
     convertMultiSelects: function() {
         var aSelects = document.getElementsByTagName('select');
-        var onchanges = new Array();
-        var onchangeCount = 0;
         // we don't increment the counter here as the array gets popped as we replace the selects
-        for (var i=0; aSelects[i] != null ; ) {
+        for (var i = 0; aSelects[i] != null; ) {
             if (! betterMultiselect.convertMultiSelect(aSelects[i])) {
                 i++; // increment count as we did not replace this select tag
             }
@@ -107,12 +99,12 @@ var betterMultiselect = {
             return false;
         }
 
-        var onchanges = new Array();
-        var onchangeCount = 0;
+        var onChanges = new Array();
+        var onChangeCount = 0;
 
         for (var j = 0; j < elem.attributes.length; j++){
             if (elem.attributes[j].nodeName == "onchange"){
-                onchanges[onchangeCount++] = elem.attributes[j].nodeValue;
+                onChanges[onChangeCount++] = elem.attributes[j].nodeValue;
                 break;
             }
         }
@@ -120,43 +112,43 @@ var betterMultiselect = {
         var optionCount = elem.options.length;
         var styleMaxWidth = (elem.style.maxWidth != null && elem.style.maxWidth.length > 0) ? elem.style.maxWidth : "0";
         var styleMaxHeight = (elem.style.maxHeight != null && elem.style.maxHeight.length > 0) ? elem.style.maxHeight : "0";
-        var msw=Math.max("0",Math.max(styleMaxWidth.replace("px",""), elem.offsetWidth));
-        var msh=Math.max("0",styleMaxHeight.replace("px",""));
-        if (msw<200) msw=200;
-        if (msh<180) msh=180;
+        var msw = Math.max("0",Math.max(styleMaxWidth.replace("px",""), elem.offsetWidth));
+        var msh = Math.max("0",styleMaxHeight.replace("px",""));
+        if (msw < 200) msw = 200;
+        if (msh < 180) msh = 180;
 
         var numSelected = 0;
         var outerDiv = document.createElement('div');
         var div = document.createElement('div');
 
-        outerDiv.style.maxWidth      = (msw + 20)+'px';
+        outerDiv.style.maxWidth = (msw + 24) + 'px';
         outerDiv.className      = 'bmultiselect';
-        div.className     = 'selection';
+        div.className           = 'selection';
         div.style.minWidth      = msw +'px';
-        div.style.maxWidth      = (msw + 16) +'px';
+        div.style.maxWidth      = (msw + 20) + 'px';
         div.style.maxHeight     = msh +'px';
 
-        for (j=0; j < elem.options.length; j++){
+        for (j = 0; j < elem.options.length; j++){
             var id = elem.name.replace('/\\[\]$/','') + j;
             var label = document.createElement('label');
             //label.style.maxWidth = msw +'px';
             label.onmouseover = function() { this.className = this.getElementsByTagName('input')[0].checked ? "selected" : "hover"; };
             label.onmouseout = function() { this.className = this.getElementsByTagName('input')[0].checked ? "selected" : ""; };
-            label.onselectstart = function () { return false; } // ie prevent text selection
-            label.onmousedown = function () { return false; } // mozilla prevent text selection
+            label.onselectstart = function () { return false; }; // ie prevent text selection
+            label.onmousedown = function () { return false; }; // mozilla prevent text selection
             var checkbox = document.createElement('input');
             checkbox.type  = 'checkbox';
             checkbox.name  = elem.name;
             checkbox.value = elem.options[j].value;
-            checkbox.id    = id+"_"+onchangeCount;
+            checkbox.id    = id + "_" + onChangeCount;
             checkbox.overme = false; // needed for IE 6 hack
             checkbox.onclick = function(){
                 if (this.checked) this.parentNode.className = "selected";
                 else this.parentNode.className = ""; // clear class for default background color
                 betterMultiselect.updateNumberSelected(this);
-                var c = parseInt(this.id.substring(this.id.lastIndexOf("_")+1))-1;
-                if (c < onchanges.length){
-                    window.eval(onchanges[c]);
+                var c = parseInt(this.id.substring(this.id.lastIndexOf("_") + 1)) - 1;
+                if (c < onChanges.length){
+                    window.eval(onChanges[c]);
                 }
             };
             if (elem.options[j].selected == true){
@@ -166,7 +158,8 @@ var betterMultiselect = {
             }
             checkbox.disabled = elem.disabled;
 
-            var labeltext  = document.createTextNode(elem.options[j].text);
+            var labeltext  = document.createElement('span');
+            labeltext.appendChild(document.createTextNode(elem.options[j].text));
             label.appendChild(checkbox);
             label.appendChild(labeltext);
             div.appendChild(label);
@@ -181,34 +174,34 @@ var betterMultiselect = {
             var statusDiv = document.createElement('div');
             statusDiv.className = 'toolbar';
             statusDiv.appendChild(betterMultiselect.newText(' ['));
-            var allLink = betterMultiselect.newLink('#','all');
+            var allLink = betterMultiselect.newLink('javascript:;', 'all', 'Select all items');
             allLink.onclick = function(){
                 var checks = this.parentNode.parentNode.getElementsByTagName('input');
-                for (var i=0; i < checks.length; i++) {
+                for (var i = 0; i < checks.length; i++) {
                     checks[i].checked = true;
                     checks[i].parentNode.className = "selected";
                     if (i == (checks.length - 1)) betterMultiselect.updateNumberSelected(checks[i]);
 
-                    var c = parseInt(checks[i].id.substring(checks[i].id.lastIndexOf("_")+1))-1;
-                    if (c < onchanges.length){
-                        window.eval(onchanges[c]);
+                    var c = parseInt(checks[i].id.substring(checks[i].id.lastIndexOf("_") + 1)) - 1;
+                    if (c < onChanges.length){
+                        window.eval(onChanges[c]);
                     }
                 }
                 return false;
             };
             statusDiv.appendChild(allLink);
             statusDiv.appendChild(betterMultiselect.newText('] ['));
-            var noneLink = betterMultiselect.newLink('#','none')
+            var noneLink = betterMultiselect.newLink('javascript:;','none', 'Deselect all items');
             noneLink.onclick = function(){
                 var checks = this.parentNode.parentNode.getElementsByTagName('input');
-                for (var i=0; i < checks.length; i++) {
+                for (var i = 0; i < checks.length; i++) {
                     checks[i].checked = false;
                     checks[i].parentNode.className = ""; // clear class for default background color
                     if (i == (checks.length - 1)) betterMultiselect.updateNumberSelected(checks[i]);
 
-                    var c = parseInt(checks[i].id.substring(checks[i].id.lastIndexOf("_")+1))-1;
-                    if (c < onchanges.length){
-                        window.eval(onchanges[c]);
+                    var c = parseInt(checks[i].id.substring(checks[i].id.lastIndexOf("_") + 1)) - 1;
+                    if (c < onChanges.length){
+                        window.eval(onChanges[c]);
                     }
                 }
                 return false;
@@ -216,16 +209,8 @@ var betterMultiselect = {
             statusDiv.appendChild(noneLink);
             statusDiv.appendChild(betterMultiselect.newText(']'));
             var checkCount = document.createElement('span');
-            checkCount.appendChild(betterMultiselect.newText('(' + numSelected + ' selected)  '));
+            checkCount.appendChild(betterMultiselect.newText('(' + numSelected + ' selected) '));
             statusDiv.appendChild(checkCount);
-            if (origClassName.indexOf("dropdown") >= 0) {
-                var closelink = betterMultiselect.newLink('#','close')
-                closelink.onclick = function(){
-                    this.parentNode.parentNode.parentNode.style.visibility = "hidden";
-                    return false;
-                };
-                statusDiv.appendChild(closelink);
-            }
             outerDiv.appendChild(statusDiv);
         }
 
@@ -238,13 +223,13 @@ var betterMultiselect = {
         EventCache.add(obj, type, fn);
       }
       else if (obj.attachEvent) {
-        obj["e"+type+fn] = fn;
-        obj[type+fn] = function() { obj["e"+type+fn]( window.event ); }
-        obj.attachEvent( "on"+type, obj[type+fn] );
+        obj["e" + type + fn] = fn;
+        obj[type + fn] = function() { obj["e" + type + fn]( window.event ); }
+        obj.attachEvent( "on" + type, obj[type + fn] );
         EventCache.add(obj, type, fn);
       }
       else {
-        obj["on"+type] = obj["e"+type+fn];
+        obj["on" + type] = obj["e" + type + fn];
       }
     }    
 };
