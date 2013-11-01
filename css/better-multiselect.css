@@ -34,7 +34,7 @@ select[multiple] {
 .bmultiselect .selection label input[type=checkbox] {
     vertical-align: middle;
     text-align: center;
-    margin: 5px 5px 6px 5px;
+    margin: 4px 4px 4px 4px;
     position: relative;
     bottom: 1px;
 }
