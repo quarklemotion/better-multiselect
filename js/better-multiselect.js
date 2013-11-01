@@ -23,8 +23,11 @@ var betterMultiselect = {
         return document.createTextNode(t);
     },
     updateNumberSelected: function (elem){
-        if (betterMultiselect.showMultiselectToolbar == true && elem.options.length >= betterMultiselect.toolbarMinOptions) {
-            var container = elem.parentNode.parentNode;
+        var container = elem.parentNode.parentNode;
+        numberOfOptions = container.getElementsByTagName('label').length;
+        if (betterMultiselect.showMultiselectToolbar == true
+            && numberOfOptions >= betterMultiselect.toolbarMinOptions) {
+
             var numSelected = 0;
             var checks = container.getElementsByTagName('input');
             for (var i = 0; i < checks.length; i++) {
