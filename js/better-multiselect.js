@@ -23,14 +23,16 @@ var betterMultiselect = {
         return document.createTextNode(t);
     },
     updateNumberSelected: function (elem){
-        var container = elem.parentNode.parentNode;
-        var numSelected = 0;
-        var checks = container.getElementsByTagName('input');
-        for (var i = 0; i < checks.length; i++) {
-            if (checks[i].disabled == false && checks[i].checked) {numSelected++;}
+        if (betterMultiselect.showMultiselectToolbar == true && elem.options.length >= betterMultiselect.toolbarMinOptions) {
+            var container = elem.parentNode.parentNode;
+            var numSelected = 0;
+            var checks = container.getElementsByTagName('input');
+            for (var i = 0; i < checks.length; i++) {
+                if (checks[i].disabled == false && checks[i].checked) {numSelected++;}
+            }
+            var spans = container.parentNode.getElementsByTagName('span');
+            spans[spans.length - 1].innerHTML = '(' + numSelected + ' selected)';
         }
-        var spans = container.parentNode.getElementsByTagName('span');
-        spans[spans.length - 1].innerHTML = '(' + numSelected + ' selected)';
     },
     convertFormElements: function() {
         if (bmFormsConverted == false){

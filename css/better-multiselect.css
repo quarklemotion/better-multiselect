@@ -16,7 +16,7 @@ select[multiple] {
     margin: 6px;
 }
 .bmultiselect .selection {
-    border : 1px solid #AAA;
+    border : 3px solid #ccc;
     overflow: auto;
     vertical-align : middle;
 }
@@ -43,17 +43,23 @@ select[multiple] {
     vertical-align: middle;
 }
 .bmultiselect .toolbar {
-    font-size: 14px;
+    font-size: 16px;
     text-align : center;
     vertical-align : middle;
-    height : 20px;
+    height : 22px;
     padding-top : 4px;
     padding-left : 3px;
-    border-left : 1px solid #AAA;
-    border-right : 1px solid #AAA;
-    border-bottom : 1px solid #AAA;
+    border-left : 3px solid #ccc;
+    border-right : 3px solid #ccc;
+    border-bottom : 3px solid #ccc;
     background-color: #ffffff;
     white-space: nowrap;
+    -moz-border-radius-bottomleft: 6px;
+    -moz-border-radius-bottomright: 6px;
+    -webkit-border-bottom-left-radius: 6px;
+    -webkit-border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
 }
 .bmultiselect .toolbar span{
     padding-right : 3px;
