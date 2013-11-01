@@ -120,7 +120,6 @@ var betterMultiselect = {
         var optionCount = elem.options.length;
         var styleMaxWidth = (elem.style.maxWidth != null && elem.style.maxWidth.length > 0) ? elem.style.maxWidth : "0";
         var styleMaxHeight = (elem.style.maxHeight != null && elem.style.maxHeight.length > 0) ? elem.style.maxHeight : "0";
-        alert(elem.offsetWidth)
         var msw=Math.max("0",Math.max(styleMaxWidth.replace("px",""), elem.offsetWidth));
         var msh=Math.max("0",styleMaxHeight.replace("px",""));
         if (msw<200) msw=200;
